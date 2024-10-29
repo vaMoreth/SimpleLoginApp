@@ -27,6 +27,7 @@
                 <label asp-for="Input.ConfirmPassword">Confirm Password</label>
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
+            <div class="g-recaptcha d-flex justify-content-center" data-sitekey="6LdGQm4qAAAAAE69A9l8X75HaLTeW5c_qnsIQ2Kl"></div><br />
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </form>
     </div>
@@ -34,4 +35,5 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 }

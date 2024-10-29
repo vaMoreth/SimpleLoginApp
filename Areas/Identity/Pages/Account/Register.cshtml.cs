@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using SimpleLoginApp.Models;
 
 namespace SimpleLoginApp.Areas.Identity.Pages.Account
 {
@@ -110,6 +112,19 @@ namespace SimpleLoginApp.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            // CAPTCHA Validation
+            var captchaResponse = Request.Form["g-recaptcha-response"];
+            var client = new HttpClient();
+            var captchaVerificationResult = await client.GetStringAsync($"https://www.google.com/recaptcha/api/siteverify?secret=6LdGQm4qAAAAACk5CTcmuwkwyU7X8zHpqfxFSkPH&response={captchaResponse}");
+            var captchaResult = JsonConvert.DeserializeObject<CaptchaResponse>(captchaVerificationResult);
+
+            if (!captchaResult.Success)
+            {
+                ModelState.AddModelError(string.Empty, "Captcha verification failed. Please try again.");
+                return Page();
+            }
+
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
@@ -153,6 +168,7 @@ namespace SimpleLoginApp.Areas.Identity.Pages.Account
             // If we got this far, something failed, redisplay form
             return Page();
         }
+
 
         private IdentityUser CreateUser()
         {
